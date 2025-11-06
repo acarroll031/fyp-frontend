@@ -52,6 +52,7 @@ const tableColumns: TableProps<Student>["columns"] = [
       let color;
       if (status === "At Risk") color = "volcano";
       else if (status === "Improving") color = "green";
+      else if (status === "Newly At Risk") color = "orange";
       else color = "geekblue";
       return (
         <Tag color={color} key={status}>
