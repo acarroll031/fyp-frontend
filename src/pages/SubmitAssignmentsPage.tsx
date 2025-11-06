@@ -6,14 +6,15 @@ import {
   Upload,
   Button,
   Space,
-  message,
   Slider,
+  App,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps, UploadFile } from "antd";
 
 const { Title } = Typography;
 const { Option } = Select;
+const { useApp } = App;
 
 const modules = [
   { code: "CS161", title: "Intro to Programming" },
@@ -38,6 +39,7 @@ const uploadProps: UploadProps = {
 };
 
 const SubmitAssignmentsPage: React.FC = () => {
+  const { message } = useApp();
   const [currentStep, setCurrentStep] = React.useState(2);
   const marks = {
     1: "Week 1",
@@ -52,7 +54,7 @@ const SubmitAssignmentsPage: React.FC = () => {
     console.log("Form Values:", values);
     console.log("Current Step:", currentStep);
 
-    const file = values.csvUpload?.[0].originFileObj;
+    const file = values.csvUpload?.[0]?.originFileObj;
 
     if (!file) {
       message.error("Please upload a CSV file.");

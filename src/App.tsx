@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, App as AntApp, ConfigProvider, theme } from "antd";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
 import DashboardPage from "./pages/DashboardPage";
@@ -43,43 +43,54 @@ const App: React.FC = () => {
     }
   };
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Header style={{ display: "flex", alignItems: "center" }}>
-        <div
-          className="logo"
-          style={{ color: "white", marginRight: "24px", fontSize: "1.2rem" }}
-        >
-          FYP
-        </div>
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          selectedKeys={getSelectedKey()}
-          items={navItems}
-          style={{ flex: 1, minWidth: 0 }}
-          onClick={handleMenuClick}
-        />
-      </Header>
+    <ConfigProvider
+      theme={{
+        algorithm: theme.darkAlgorithm,
+      }}
+    >
+      <AntApp>
+        <Layout style={{ minHeight: "100vh" }}>
+          <Header style={{ display: "flex", alignItems: "center" }}>
+            <div
+              className="logo"
+              style={{
+                color: "white",
+                marginRight: "24px",
+                fontSize: "1.2rem",
+              }}
+            >
+              FYP
+            </div>
+            <Menu
+              theme="dark"
+              mode="horizontal"
+              selectedKeys={getSelectedKey()}
+              items={navItems}
+              style={{ flex: 1, minWidth: 0 }}
+              onClick={handleMenuClick}
+            />
+          </Header>
 
-      <Content style={{ padding: "24px 48px" }}>
-        <div
-          style={{
-            padding: 24,
-            minHeight: 380,
-            background: "#fff",
-          }}
-        >
-          <Routes>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/submit" element={<SubmitPage />} />
-          </Routes>
-        </div>
-      </Content>
+          <Content style={{ padding: "24px 48px" }}>
+            <div
+              style={{
+                padding: 24,
+                minHeight: 380,
+              }}
+            >
+              <Routes>
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/submit" element={<SubmitPage />} />
+              </Routes>
+            </div>
+          </Content>
 
-      <Footer style={{ textAlign: "center" }}>
-        Predictive Analytics ©2025 Created by a Final Year Student
-      </Footer>
-    </Layout>
+          <Footer style={{ textAlign: "center" }}>
+            Predictive Analytics ©2025 Created by a Final Year Student
+          </Footer>
+        </Layout>
+      </AntApp>
+    </ConfigProvider>
   );
 };
 
