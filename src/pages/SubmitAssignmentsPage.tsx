@@ -65,7 +65,7 @@ const SubmitAssignmentsPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/students/${values.moduleCode}/grades?progress_in_semester=${currentStep}`,
+        `http://localhost:8000/students/${values.moduleCode}/grades?progress_in_semester=${currentStep + 1}`,
         {
           method: "POST",
           body: formData,

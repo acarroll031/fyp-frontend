@@ -1,6 +1,6 @@
 import React from "react";
 import { Layout, Menu } from "antd";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
 import DashboardPage from "./pages/DashboardPage";
 import SubmitPage from "./pages/SubmitAssignmentsPage.tsx";
@@ -8,7 +8,6 @@ import SubmitPage from "./pages/SubmitAssignmentsPage.tsx";
 const { Header, Content, Footer } = Layout;
 
 const navItems = [
-  // ... (same as before)
   { key: "1", label: "Dashboard" },
   { key: "2", label: "Submit Assessments" },
   { key: "3", label: "Your Modules" },
@@ -18,6 +17,18 @@ const navItems = [
 
 const App: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const getSelectedKey = () => {
+    switch (location.pathname) {
+      case "/":
+        return ["1"];
+      case "/submit":
+        return ["2"];
+      default:
+        return ["1"];
+    }
+  };
 
   const handleMenuClick = (e: { key: string }) => {
     switch (e.key) {
@@ -38,12 +49,12 @@ const App: React.FC = () => {
           className="logo"
           style={{ color: "white", marginRight: "24px", fontSize: "1.2rem" }}
         >
-          My Project
+          FYP
         </div>
         <Menu
           theme="dark"
           mode="horizontal"
-          defaultSelectedKeys={["1"]}
+          selectedKeys={getSelectedKey()}
           items={navItems}
           style={{ flex: 1, minWidth: 0 }}
           onClick={handleMenuClick}
