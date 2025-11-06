@@ -65,6 +65,16 @@ const tableColumns: TableProps<Student>["columns"] = [
 const DashboardPage: React.FC = () => {
   const [tableData, setTableData] = useState<Student[]>([]);
 
+  const studentsAtRisk = tableData.filter(
+    (student) => student.status === "At Risk",
+  ).length;
+  const newlyAtRisk = tableData.filter(
+    (student) => student.status === "Newly At Risk",
+  ).length;
+  const improvingStudents = tableData.filter(
+    (student) => student.status === "Improving",
+  ).length;
+
   useEffect(() => {
     axios.get("http://localhost:8000/students").then((response) => {
       console.log(response.data);
@@ -95,7 +105,7 @@ const DashboardPage: React.FC = () => {
         <Card>
           <Statistic
             title="Students at Risk"
-            value={12}
+            value={studentsAtRisk}
             valueStyle={{ color: "#cf1322" }}
             prefix={<WarningOutlined />}
           />
@@ -103,14 +113,14 @@ const DashboardPage: React.FC = () => {
         <Card>
           <Statistic
             title="Newly At Risk"
-            value={3}
+            value={newlyAtRisk}
             valueStyle={{ color: "#faad14" }}
           />
         </Card>
         <Card>
           <Statistic
             title="Improving Students"
-            value={7}
+            value={improvingStudents}
             valueStyle={{ color: "#3f8600" }}
             prefix={<ArrowUpOutlined />}
           />

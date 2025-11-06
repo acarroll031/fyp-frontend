@@ -10,7 +10,7 @@ import {
   Slider,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import type { UploadProps } from "antd";
+import type { UploadProps, UploadFile } from "antd";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -23,20 +23,18 @@ const modules = [
 
 const totalSteps = 12;
 
+interface FormValues {
+  moduleCode: string;
+  semesterProgress: number;
+  csvUpload: UploadFile[];
+}
+
 const uploadProps: UploadProps = {
-  name: "file", // The name of the file field in the POST request
-  action: "https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188", // A dummy API endpoint
-  headers: {
-    authorization: "authorization-text",
-  },
   accept: ".csv",
-  onChange(info) {
-    if (info.file.status === "done") {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === "error") {
-      message.error(`${info.file.name} file upload failed.`);
-    }
+  beforeUpload: () => {
+    return false;
   },
+  maxCount: 1,
 };
 
 const SubmitAssignmentsPage: React.FC = () => {
@@ -48,12 +46,54 @@ const SubmitAssignmentsPage: React.FC = () => {
     9: "Week 9",
     12: "Week 12",
   };
+  const [form] = Form.useForm();
+
+  const handleSubmit = async (values: FormValues) => {
+    console.log("Form Values:", values);
+    console.log("Current Step:", currentStep);
+
+    const file = values.csvUpload?.[0].originFileObj;
+
+    if (!file) {
+      message.error("Please upload a CSV file.");
+      return;
+    }
+    console.log("File to upload:", file);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch(
+        `http://localhost:8000/students/${values.moduleCode}/grades?progress_in_semester=${currentStep}`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      if (response.ok) {
+        message.success("Grades submitted successfully!");
+        form.resetFields();
+      } else {
+        message.error("Failed to submit grades. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting grades:", error);
+      message.error("An error occurred while submitting grades.");
+    }
+  };
 
   return (
     <Space direction="vertical" size="large" style={{ display: "flex" }}>
       <Title level={2}>Submit Assessments</Title>
 
-      <Form layout="vertical" style={{ maxWidth: 650 }}>
+      <Form
+        form={form}
+        onFinish={handleSubmit}
+        layout="vertical"
+        style={{ maxWidth: 650 }}
+      >
         <Form.Item
           label="Module Code:"
           name="moduleCode"
@@ -82,6 +122,12 @@ const SubmitAssignmentsPage: React.FC = () => {
           label="Upload CSV File:"
           name="csvUpload"
           valuePropName="fileList"
+          getValueFromEvent={(e) => {
+            if (Array.isArray(e)) {
+              return e;
+            }
+            return e?.fileList;
+          }}
         >
           <Upload {...uploadProps}>
             <Button icon={<UploadOutlined />}>Click to Upload</Button>
