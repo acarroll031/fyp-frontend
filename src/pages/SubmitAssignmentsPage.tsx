@@ -56,6 +56,10 @@ const SubmitAssignmentsPage: React.FC = () => {
 
     const file = values.csvUpload?.[0]?.originFileObj;
 
+    const progress_in_semester = Number((currentStep + 1) / totalSteps).toFixed(
+      2,
+    );
+
     if (!file) {
       message.error("Please upload a CSV file.");
       return;
@@ -67,7 +71,7 @@ const SubmitAssignmentsPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/students/${values.moduleCode}/grades?progress_in_semester=${currentStep + 1}`,
+        `http://localhost:8000/students/${values.moduleCode}/grades?progress_in_semester=${progress_in_semester}`,
         {
           method: "POST",
           body: formData,
