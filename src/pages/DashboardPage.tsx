@@ -64,6 +64,7 @@ const tableColumns: TableProps<Student>["columns"] = [
 
 const DashboardPage: React.FC = () => {
   const [tableData, setTableData] = useState<Student[]>([]);
+  const [filteredData, setFilteredData] = useState<Student[]>([]);
 
   const studentsAtRisk = tableData.filter(
     (student) => student.status === "At Risk",
@@ -97,8 +98,26 @@ const DashboardPage: React.FC = () => {
       );
       console.log(students);
       setTableData(students);
+      setFilteredData(students);
     });
   }, []);
+
+  const handleSearch = (value: string) => {
+    const searchValue = value.toLowerCase().trim();
+
+    if (!searchValue) {
+      setFilteredData(tableData);
+      return;
+    }
+
+    const filtered = tableData.filter(
+      (student) =>
+        student.fullName.toLowerCase().includes(searchValue) ||
+        student.studentNumber.toLowerCase().includes(searchValue),
+    );
+
+    setFilteredData(filtered);
+  };
   return (
     <Space direction="vertical" size="large" style={{ display: "flex" }}>
       <Flex gap="large">
@@ -131,13 +150,16 @@ const DashboardPage: React.FC = () => {
         <Space direction="vertical" size="middle" style={{ display: "flex" }}>
           <Search
             placeholder="Search by name or student number..."
-            onSearch={(value) => console.log(value)}
+            onSearch={handleSearch}
+            onChange={(e) => handleSearch(e.target.value)}
+            enterButton
+            allowClear
             style={{ width: 400 }}
           />
 
           <Table
             columns={tableColumns}
-            dataSource={tableData}
+            dataSource={filteredData}
             pagination={{ pageSize: 5 }}
           />
         </Space>
