@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Flex, Card, Statistic, Space, Table, Tag, Input } from "antd";
 import type { TableProps } from "antd"; // Import the TableProps type
 import { ArrowUpOutlined, WarningOutlined } from "@ant-design/icons";
+import axios from "axios";
 
 const { Search } = Input;
 
@@ -12,6 +13,13 @@ interface Student {
   module: string;
   riskScore: number;
   status: "At Risk" | "Improving" | "On Track" | "Newly At Risk";
+}
+
+interface StudentResponse {
+  student_id: number;
+  student_name: string;
+  module: string;
+  risk_score: number;
 }
 
 const tableColumns: TableProps<Student>["columns"] = [
@@ -54,26 +62,33 @@ const tableColumns: TableProps<Student>["columns"] = [
   },
 ];
 
-const tableData: Student[] = [
-  {
-    key: "1",
-    studentNumber: "20012345",
-    fullName: "John Doe",
-    module: "CS161",
-    riskScore: 25,
-    status: "Improving",
-  },
-  {
-    key: "2",
-    studentNumber: "20054321",
-    fullName: "Jane Smith",
-    module: "CS161",
-    riskScore: 82,
-    status: "At Risk",
-  },
-];
-
 const DashboardPage: React.FC = () => {
+  const [tableData, setTableData] = useState<Student[]>([]);
+
+  useEffect(() => {
+    axios.get("http://localhost:8000/students").then((response) => {
+      console.log(response.data);
+      const students: Student[] = response.data.map(
+        (student: StudentResponse) => ({
+          key: student.student_id.toString(),
+          studentNumber: student.student_id.toString(),
+          fullName: student.student_name,
+          module: student.module,
+          riskScore: student.risk_score,
+          status:
+            student.risk_score > 70
+              ? "At Risk"
+              : student.risk_score > 40
+                ? "Newly At Risk"
+                : student.risk_score > 20
+                  ? "Improving"
+                  : "On Track",
+        }),
+      );
+      console.log(students);
+      setTableData(students);
+    });
+  }, []);
   return (
     <Space direction="vertical" size="large" style={{ display: "flex" }}>
       <Flex gap="large">

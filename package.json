@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "antd": "^5.28.0",
+    "axios": "^1.13.2",
     "bootstrap": "^5.3.8",
     "prettier": "^3.6.2",
     "react": "^19.1.1",
