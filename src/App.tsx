@@ -2,6 +2,7 @@ import React from "react";
 import { Layout, Menu, App as AntApp, ConfigProvider, theme } from "antd";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
+
 import DashboardPage from "./pages/DashboardPage";
 import SubmitPage from "./pages/SubmitAssignmentsPage.tsx";
 
@@ -59,7 +60,7 @@ const App: React.FC = () => {
                 fontSize: "1.2rem",
               }}
             >
-              FYP
+              <img src={"public/graduate.svg"} alt={"Logo"} style={{height: 34}} />
             </div>
             <Menu
               theme="dark"
