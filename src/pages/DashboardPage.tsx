@@ -174,7 +174,7 @@ const DashboardPage: React.FC = () => {
             onClick={() => handleStatusFilter("At Risk")}
             style={{
                 cursor: 'pointer',
-                border: statusFilter === "At Risk" ? '2px solid #cf1322' : undefined
+                border: statusFilter === "At Risk" ? '2px solid #1668dc' : undefined
             }}>
           <Statistic
             title="Students at Risk"
@@ -188,7 +188,7 @@ const DashboardPage: React.FC = () => {
             onClick={() => handleStatusFilter("Newly At Risk")}
             style={{
                 cursor: 'pointer',
-                border: statusFilter === "Newly At Risk" ? '2px solid #cf1322' : undefined
+                border: statusFilter === "Newly At Risk" ? '2px solid #1668dc' : undefined
             }}>
           <Statistic
             title="Newly At Risk"
@@ -201,7 +201,7 @@ const DashboardPage: React.FC = () => {
             onClick={() => handleStatusFilter("Improving")}
             style={{
                 cursor: 'pointer',
-                border: statusFilter === "Improving" ? '2px solid #cf1322' : undefined
+                border: statusFilter === "Improving" ? '2px solid #1668dc' : undefined
             }}>
           <Statistic
             title="Improving Students"

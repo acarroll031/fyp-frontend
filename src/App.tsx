@@ -58,9 +58,13 @@ const App: React.FC = () => {
                 color: "white",
                 marginRight: "24px",
                 fontSize: "1.2rem",
+                  gap: "8px",
+                display: "flex",
+                alignItems: "center",
               }}
             >
               <img src={"graduate.svg"} alt={"Logo"} style={{height: 34}} />
+                <span style={{ fontSize: "0.9rem" }}>Student Risk Predictor</span>
             </div>
             <Menu
               theme="dark"
@@ -72,11 +76,17 @@ const App: React.FC = () => {
             />
           </Header>
 
-          <Content style={{ padding: "24px 48px" }}>
+          <Content
+              style={{
+                  padding: "24px 48px",
+                  backgroundImage: "url('/site-background.jpg')",
+                  backgroundSize: 'cover',}}
+          >
             <div
               style={{
                 padding: 24,
                 minHeight: 380,
+
               }}
             >
               <Routes>
