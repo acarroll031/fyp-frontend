@@ -60,7 +60,7 @@ const App: React.FC = () => {
                 fontSize: "1.2rem",
               }}
             >
-              <img src={"public/graduate.svg"} alt={"Logo"} style={{height: 34}} />
+              <img src={"graduate.svg"} alt={"Logo"} style={{height: 34}} />
             </div>
             <Menu
               theme="dark"
