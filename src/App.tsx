@@ -13,6 +13,7 @@ import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage.tsx";
 import ProtectedRoute from "./Components/ProtectedRoute.tsx";
 import SubmitAssignmentsPage from "./pages/SubmitAssignmentsPage.tsx";
+import ModulesPage from "./pages/ModulesPage.tsx";
 
 const { Header, Content, Footer } = Layout;
 
@@ -35,6 +36,8 @@ const App: React.FC = () => {
         return ["1"];
       case "/submit":
         return ["2"];
+      case "/myModules":
+        return ["3"];
       default:
         return ["1"];
     }
@@ -47,6 +50,9 @@ const App: React.FC = () => {
         break;
       case "2":
         navigate("/submit");
+        break;
+      case "3":
+        navigate("/myModules");
         break;
       default:
         navigate("/");
@@ -115,6 +121,7 @@ const App: React.FC = () => {
                 <Route element={<ProtectedRoute />}>
                   <Route path="/" element={<DashboardPage />} />
                   <Route path="/submit" element={<SubmitAssignmentsPage />} />
+                  <Route path="/myModules" element={<ModulesPage />} />
                 </Route>
               </Routes>
             </div>
