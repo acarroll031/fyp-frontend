@@ -60,7 +60,6 @@ const LoginPage: React.FC = () => {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        backgroundColor: "#f0f2f5",
       }}
     >
       <Card style={{ width: 400, boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}>
