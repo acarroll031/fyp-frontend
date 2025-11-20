@@ -3,6 +3,7 @@ import { Flex, Card, Statistic, Space, Table, Tag, Input } from "antd";
 import type { TableProps } from "antd"; // Import the TableProps type
 import { ArrowUpOutlined, WarningOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const { Search } = Input;
 
@@ -23,9 +24,9 @@ interface StudentResponse {
 }
 
 const module_filters = [
-    { text: 'CS161', value: 'CS161' },
-    { text: 'CS162', value: 'CS162' },
-    { text: 'CS210', value: 'CS210' },
+  { text: "CS161", value: "CS161" },
+  { text: "CS162", value: "CS162" },
+  { text: "CS210", value: "CS210" },
 ];
 
 const tableColumns: TableProps<Student>["columns"] = [
@@ -43,21 +44,21 @@ const tableColumns: TableProps<Student>["columns"] = [
     title: "Module",
     dataIndex: "module",
     key: "module",
-      sorter: {
-          compare: (a, b) => a.module.localeCompare(b.module),
-          multiple: 3,
-      },
-      filters: module_filters,
-        onFilter: (value, record) => record.module === value,
+    sorter: {
+      compare: (a, b) => a.module.localeCompare(b.module),
+      multiple: 3,
+    },
+    filters: module_filters,
+    onFilter: (value, record) => record.module === value,
   },
   {
     title: "Risk Score",
     dataIndex: "riskScore",
     key: "riskScore",
-      sorter: {
-          compare: (a, b) => a.riskScore - b.riskScore,
-          multiple: 2,
-      }
+    sorter: {
+      compare: (a, b) => a.riskScore - b.riskScore,
+      multiple: 2,
+    },
   },
   {
     title: "Status",
@@ -75,20 +76,21 @@ const tableColumns: TableProps<Student>["columns"] = [
         </Tag>
       );
     },
-      sorter: {
-          compare: (a, b) => a.status.localeCompare(b.status),
-          multiple: 1,
-      }
+    sorter: {
+      compare: (a, b) => a.status.localeCompare(b.status),
+      multiple: 1,
+    },
   },
 ];
-
-
 
 const DashboardPage: React.FC = () => {
   const [tableData, setTableData] = useState<Student[]>([]);
   const [filteredData, setFilteredData] = useState<Student[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<Student["status"] | null>(null);
+  const [statusFilter, setStatusFilter] = useState<Student["status"] | null>(
+    null,
+  );
+  const navigate = useNavigate();
 
   const studentsAtRisk = tableData.filter(
     (student) => student.status === "At Risk",
@@ -101,50 +103,68 @@ const DashboardPage: React.FC = () => {
   ).length;
 
   useEffect(() => {
-    axios.get("http://localhost:8000/students").then((response) => {
-      console.log(response.data);
-      const students: Student[] = response.data.map(
-        (student: StudentResponse) => ({
-          key: student.student_id.toString() + "-" + student.module,
-          studentNumber: student.student_id.toString(),
-          fullName: student.student_name,
-          module: student.module,
-          riskScore: student.risk_score,
-          status:
-            student.risk_score > 70
-              ? "At Risk"
-              : student.risk_score > 40
-                ? "Newly At Risk"
-                : student.risk_score > 20
-                  ? "Improving"
-                  : "On Track",
-        }),
+    const fetchStudents = async () => {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      try {
+        const response = await axios.get("http://localhost:8000/students", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        console.log(response.data);
+        const students: Student[] = response.data.map(
+          (student: StudentResponse) => ({
+            key: student.student_id.toString() + "-" + student.module,
+            studentNumber: student.student_id.toString(),
+            fullName: student.student_name,
+            module: student.module,
+            riskScore: student.risk_score,
+            status:
+              student.risk_score > 70
+                ? "At Risk"
+                : student.risk_score > 40
+                  ? "Newly At Risk"
+                  : student.risk_score > 20
+                    ? "Improving"
+                    : "On Track",
+          }),
+        );
+        setTableData(students);
+        setFilteredData(students);
+      } catch (error) {
+        console.error("Error fetching students:", error);
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          navigate("/login");
+        }
+      }
+    };
+    fetchStudents();
+  }, [navigate]);
+
+  useEffect(() => {
+    let filtered = tableData;
+
+    // Apply search filter
+    if (searchValue) {
+      filtered = filtered.filter(
+        (student) =>
+          student.fullName.toLowerCase().includes(searchValue) ||
+          student.studentNumber.toLowerCase().includes(searchValue),
       );
-      console.log(students);
-      setTableData(students);
-      setFilteredData(students);
-    });
-  }, []);
+    }
 
-    useEffect(() => {
-        let filtered = tableData;
+    // Apply status filter
+    if (statusFilter) {
+      filtered = filtered.filter((student) => student.status === statusFilter);
+    }
 
-        // Apply search filter
-        if (searchValue) {
-            filtered = filtered.filter(
-                (student) =>
-                    student.fullName.toLowerCase().includes(searchValue) ||
-                    student.studentNumber.toLowerCase().includes(searchValue),
-            );
-        }
-
-        // Apply status filter
-        if (statusFilter) {
-            filtered = filtered.filter((student) => student.status === statusFilter);
-        }
-
-        setFilteredData(filtered);
-    }, [tableData, searchValue, statusFilter]);
+    setFilteredData(filtered);
+  }, [tableData, searchValue, statusFilter]);
 
   const handleSearch = (value: string) => {
     const searchValue = value.toLowerCase().trim();
@@ -163,19 +183,21 @@ const DashboardPage: React.FC = () => {
     setFilteredData(filtered);
   };
 
-    const handleStatusFilter = (status: Student["status"]) => {
-        setStatusFilter(statusFilter === status ? null : status);
-    };
+  const handleStatusFilter = (status: Student["status"]) => {
+    setStatusFilter(statusFilter === status ? null : status);
+  };
   return (
     <Space direction="vertical" size="large" style={{ display: "flex" }}>
       <Flex gap="large">
         <Card
-            hoverable
-            onClick={() => handleStatusFilter("At Risk")}
-            style={{
-                cursor: 'pointer',
-                border: statusFilter === "At Risk" ? '2px solid #1668dc' : undefined
-            }}>
+          hoverable
+          onClick={() => handleStatusFilter("At Risk")}
+          style={{
+            cursor: "pointer",
+            border:
+              statusFilter === "At Risk" ? "2px solid #1668dc" : undefined,
+          }}
+        >
           <Statistic
             title="Students at Risk"
             value={studentsAtRisk}
@@ -184,12 +206,16 @@ const DashboardPage: React.FC = () => {
           />
         </Card>
         <Card
-            hoverable
-            onClick={() => handleStatusFilter("Newly At Risk")}
-            style={{
-                cursor: 'pointer',
-                border: statusFilter === "Newly At Risk" ? '2px solid #1668dc' : undefined
-            }}>
+          hoverable
+          onClick={() => handleStatusFilter("Newly At Risk")}
+          style={{
+            cursor: "pointer",
+            border:
+              statusFilter === "Newly At Risk"
+                ? "2px solid #1668dc"
+                : undefined,
+          }}
+        >
           <Statistic
             title="Newly At Risk"
             value={newlyAtRisk}
@@ -197,12 +223,14 @@ const DashboardPage: React.FC = () => {
           />
         </Card>
         <Card
-            hoverable
-            onClick={() => handleStatusFilter("Improving")}
-            style={{
-                cursor: 'pointer',
-                border: statusFilter === "Improving" ? '2px solid #1668dc' : undefined
-            }}>
+          hoverable
+          onClick={() => handleStatusFilter("Improving")}
+          style={{
+            cursor: "pointer",
+            border:
+              statusFilter === "Improving" ? "2px solid #1668dc" : undefined,
+          }}
+        >
           <Statistic
             title="Improving Students"
             value={improvingStudents}
