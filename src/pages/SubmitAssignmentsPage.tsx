@@ -40,7 +40,7 @@ const uploadProps: UploadProps = {
 
 const SubmitAssignmentsPage: React.FC = () => {
   const { message } = useApp();
-  const [currentAssessment, setCurrentAssessment] = React.useState(2);
+  const [currentAssessment, setCurrentAssessment] = React.useState(1);
   const marks = {
     1: "Week 1",
     3: "Week 3",
@@ -57,8 +57,10 @@ const SubmitAssignmentsPage: React.FC = () => {
     const file = values.csvUpload?.[0]?.originFileObj;
 
     const progress_in_semester = Number(
-      (currentAssessment + 1) / totalAssessments,
+      currentAssessment / totalAssessments,
     ).toFixed(2);
+
+    console.log("progress_in_semester:", progress_in_semester);
 
     if (!file) {
       message.error("Please upload a CSV file.");
@@ -121,7 +123,7 @@ const SubmitAssignmentsPage: React.FC = () => {
             marks={marks}
             step={1}
             value={currentAssessment}
-            onChange={(value) => setCurrentAssessment(value - 1)}
+            onChange={setCurrentAssessment}
           />
         </Form.Item>
 
