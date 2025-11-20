@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Typography,
   Form,
@@ -11,23 +11,22 @@ import {
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps, UploadFile } from "antd";
+import axios from "axios";
 
 const { Title } = Typography;
 const { Option } = Select;
 const { useApp } = App;
 
-const modules = [
-  { code: "CS161", title: "Intro to Programming" },
-  { code: "CS162", title: "Data Structures" },
-  { code: "CS210", title: "Databases" },
-];
-
-const totalAssessments = 12;
-
 interface FormValues {
   moduleCode: string;
   semesterProgress: number;
   csvUpload: UploadFile[];
+}
+
+interface Module {
+  module_code: string;
+  module_name: string;
+  assessment_count: number;
 }
 
 const uploadProps: UploadProps = {
@@ -40,16 +39,38 @@ const uploadProps: UploadProps = {
 
 const SubmitAssignmentsPage: React.FC = () => {
   const { message } = useApp();
-  const [currentAssessment, setCurrentAssessment] = React.useState(1);
-  const marks = {
-    1: "Week 1",
-    3: "Week 3",
-    6: "Week 6",
-    9: "Week 9",
-    12: "Week 12",
-  };
   const [form] = Form.useForm();
+  const [modules, setModules] = useState<Module[]>([]);
+  const [maxAssessments, setMaxAssessments] = useState<number>(12);
+  const [currentAssessment, setCurrentAssessment] = useState<number>(1);
 
+  useEffect(() => {
+    const fetchModules = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        const response = await axios.get("http://localhost:8000/modules", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setModules(response.data);
+      } catch (error) {
+        console.log("Failed to fetch modules:", error);
+        message.error("Could not load your modules.");
+      }
+    };
+    fetchModules().then();
+  });
+
+  const handleModuleChange = (value: string) => {
+    const selectedModule = modules.find((mod) => mod.module_code === value);
+
+    if (selectedModule) {
+      setMaxAssessments(selectedModule.assessment_count);
+      setCurrentAssessment(1);
+      message
+        .info(`Max assessments set to ${selectedModule.assessment_count}`)
+        .then();
+    }
+  };
   const handleSubmit = async (values: FormValues) => {
     console.log("Form Values:", values);
     console.log("Current Step:", currentAssessment);
@@ -57,7 +78,7 @@ const SubmitAssignmentsPage: React.FC = () => {
     const file = values.csvUpload?.[0]?.originFileObj;
 
     const progress_in_semester = Number(
-      currentAssessment / totalAssessments,
+      currentAssessment / maxAssessments,
     ).toFixed(2);
 
     console.log("progress_in_semester:", progress_in_semester);
@@ -107,23 +128,26 @@ const SubmitAssignmentsPage: React.FC = () => {
           name="moduleCode"
           rules={[{ required: true, message: "Please select a module" }]}
         >
-          <Select placeholder="Select a module">
+          <Select placeholder="Select a module" onChange={handleModuleChange}>
             {modules.map((mod) => (
-              <Option key={mod.code} value={mod.code}>
-                {mod.code} - {mod.title}
+              <Option key={mod.module_code} value={mod.module_code}>
+                {mod.module_code} - {mod.module_name}
               </Option>
             ))}
           </Select>
         </Form.Item>
 
-        <Form.Item label="Assessment:" name="assessmentStep">
+        <Form.Item
+          label={`Assessment Progress (${currentAssessment}/${maxAssessments}):`}
+          name="assessmentStep"
+        >
           <Slider
             min={1}
-            max={totalAssessments}
-            marks={marks}
+            max={maxAssessments}
             step={1}
             value={currentAssessment}
             onChange={setCurrentAssessment}
+            tooltip={{ formatter: (value) => `Assessment ${value}` }}
           />
         </Form.Item>
 
