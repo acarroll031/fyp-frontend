@@ -54,17 +54,17 @@ const ModulesPage: React.FC = () => {
     setEditingModule(record);
     // Map backend fields to form fields
     form.setFieldsValue({
-      code: record.module_code,
-      title: record.module_name,
+      module_code: record.module_code,
+      module_name: record.module_name,
       assessment_count: record.assessment_count,
     });
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (code: string) => {
+  const handleDelete = async (module_code: string) => {
     try {
       const token = localStorage.getItem("access_token");
-      await axios.delete(`http://localhost:8000/modules/${code}`, {
+      await axios.delete(`http://localhost:8000/modules/${module_code}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       message.success("Module deleted");
@@ -143,17 +143,18 @@ const ModulesPage: React.FC = () => {
         onOk={handleOk}
         onCancel={() => setIsModalOpen(false)}
         confirmLoading={loading}
+        destroyOnHidden={true}
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            name="code"
+            name="module_code"
             label="Module Code"
             rules={[{ required: true }]}
           >
-            <Input disabled={!!editingModule} />{" "}
+            <Input disabled={!!editingModule} />
           </Form.Item>
           <Form.Item
-            name="title"
+            name="module_name"
             label="Module Name"
             rules={[{ required: true }]}
           >
