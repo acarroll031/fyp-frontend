@@ -10,6 +10,9 @@ interface LoginFormValues {
   email: string;
   password: string;
 }
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -28,7 +31,7 @@ const LoginPage: React.FC = () => {
       formData.append("password", values.password);
 
       const response = await axios.post(
-        "http://localhost:8000/login",
+        `${API_URL}/login`,
         formData,
         {
           headers: {

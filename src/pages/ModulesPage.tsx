@@ -20,6 +20,8 @@ interface Module {
   assessment_count: number;
 }
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const ModulesPage: React.FC = () => {
   const [modules, setModules] = useState<Module[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,7 +32,7 @@ const ModulesPage: React.FC = () => {
   const fetchModules = async () => {
     try {
       const token = localStorage.getItem("access_token");
-      const response = await axios.get("http://localhost:8000/modules", {
+      const response = await axios.get(`${API_URL}/modules`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setModules(response.data);
@@ -64,7 +66,7 @@ const ModulesPage: React.FC = () => {
   const handleDelete = async (module_code: string) => {
     try {
       const token = localStorage.getItem("access_token");
-      await axios.delete(`http://localhost:8000/modules/${module_code}`, {
+      await axios.delete(`${API_URL}/modules/${module_code}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       message.success("Module deleted");
@@ -84,14 +86,14 @@ const ModulesPage: React.FC = () => {
 
       if (editingModule) {
         await axios.put(
-          `http://localhost:8000/modules/${editingModule.module_code}`,
+          `${API_URL}/modules/${editingModule.module_code}`,
           values,
           { headers },
         );
         message.success("Module updated");
       } else {
         // CREATE Logic
-        await axios.post("http://localhost:8000/modules", values, { headers });
+        await axios.post(`${API_URL}/modules`, values, { headers });
         message.success("Module created");
       }
 

@@ -23,6 +23,8 @@ interface StudentResponse {
   risk_score: number;
 }
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const module_filters = [
   { text: "CS161", value: "CS161" },
   { text: "CS162", value: "CS162" },
@@ -112,7 +114,7 @@ const DashboardPage: React.FC = () => {
       }
 
       try {
-        const response = await axios.get("http://localhost:8000/students", {
+        const response = await axios.get(`${API_URL}/students`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
