@@ -8,6 +8,7 @@ import {
   Button,
 } from "antd";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react"
 
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage.tsx";
@@ -71,6 +72,7 @@ const App: React.FC = () => {
       }}
     >
       <AntApp>
+          <Analytics/>
         <Layout style={{ minHeight: "100vh" }}>
           <Header style={{ display: "flex", alignItems: "center" }}>
             <div

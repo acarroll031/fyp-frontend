@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ant-design/happy-work-theme": "^1.0.1",
+    "@vercel/analytics": "^1.5.0",
     "antd": "^5.28.0",
     "axios": "^1.13.2",
     "bootstrap": "^5.3.8",

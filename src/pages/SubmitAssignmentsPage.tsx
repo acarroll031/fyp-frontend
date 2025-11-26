@@ -37,6 +37,8 @@ const uploadProps: UploadProps = {
   maxCount: 1,
 };
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const SubmitAssignmentsPage: React.FC = () => {
   const { message } = useApp();
   const [form] = Form.useForm();
@@ -48,7 +50,7 @@ const SubmitAssignmentsPage: React.FC = () => {
     const fetchModules = async () => {
       try {
         const token = localStorage.getItem("access_token");
-        const response = await axios.get("http://localhost:8000/modules", {
+        const response = await axios.get(`${API_URL}/modules`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setModules(response.data);
@@ -94,7 +96,7 @@ const SubmitAssignmentsPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/students/${values.moduleCode}/grades?progress_in_semester=${progress_in_semester}`,
+        `${API_URL}/students/${values.moduleCode}/grades?progress_in_semester=${progress_in_semester}`,
         {
           method: "POST",
           body: formData,
