@@ -8,13 +8,14 @@ import {
   Button,
 } from "antd";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from "@vercel/analytics/react";
 
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage.tsx";
 import ProtectedRoute from "./Components/ProtectedRoute.tsx";
 import SubmitAssignmentsPage from "./pages/SubmitAssignmentsPage.tsx";
 import ModulesPage from "./pages/ModulesPage.tsx";
+import RegisterPage from "./pages/RegistrationPage.tsx";
 
 const { Header, Content, Footer } = Layout;
 
@@ -72,7 +73,7 @@ const App: React.FC = () => {
       }}
     >
       <AntApp>
-          <Analytics/>
+        <Analytics />
         <Layout style={{ minHeight: "100vh" }}>
           <Header style={{ display: "flex", alignItems: "center" }}>
             <div
@@ -119,6 +120,7 @@ const App: React.FC = () => {
             >
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
 
                 <Route element={<ProtectedRoute />}>
                   <Route path="/" element={<DashboardPage />} />

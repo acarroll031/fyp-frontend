@@ -6,10 +6,10 @@ import {
   Form,
   Input,
   InputNumber,
-  message,
   Popconfirm,
   Space,
   Card,
+  App,
 } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
@@ -19,10 +19,11 @@ interface Module {
   module_name: string;
   assessment_count: number;
 }
-
+const { useApp } = App;
 const API_URL = import.meta.env.VITE_API_URL;
 
 const ModulesPage: React.FC = () => {
+  const { message } = useApp();
   const [modules, setModules] = useState<Module[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
@@ -44,7 +45,7 @@ const ModulesPage: React.FC = () => {
 
   useEffect(() => {
     fetchModules();
-  }, []);
+  });
 
   const handleAdd = () => {
     setEditingModule(null);

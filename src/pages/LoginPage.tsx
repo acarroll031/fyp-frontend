@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Card, message, Typography } from "antd";
+import { Form, Input, Button, Card, Typography, App } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
+
+const { useApp } = App;
 
 interface LoginFormValues {
   email: string;
@@ -14,6 +16,7 @@ interface LoginFormValues {
 const API_URL = import.meta.env.VITE_API_URL;
 
 const LoginPage: React.FC = () => {
+  const { message } = useApp();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
@@ -30,15 +33,11 @@ const LoginPage: React.FC = () => {
       formData.append("username", values.email);
       formData.append("password", values.password);
 
-      const response = await axios.post(
-        `${API_URL}/login`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
+      const response = await axios.post(`${API_URL}/login`, formData, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-      );
+      });
 
       const { access_token } = response.data;
       localStorage.setItem("access_token", access_token);
@@ -104,6 +103,7 @@ const LoginPage: React.FC = () => {
             >
               Log In
             </Button>
+            or <a href="/register">Register now!</a>
           </Form.Item>
         </Form>
       </Card>
