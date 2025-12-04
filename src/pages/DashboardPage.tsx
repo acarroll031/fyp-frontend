@@ -33,7 +33,6 @@ interface Module {
 
 const DashboardPage: React.FC = () => {
   const [tableData, setTableData] = useState<Student[]>([]);
-  const [filteredData, setFilteredData] = useState<Student[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<Student["status"] | null>(
     null,
@@ -164,7 +163,6 @@ const DashboardPage: React.FC = () => {
           }),
         );
         setTableData(students);
-        setFilteredData(students);
       } catch (error) {
         console.error("Error fetching students:", error);
         if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -175,10 +173,9 @@ const DashboardPage: React.FC = () => {
     fetchStudents();
   }, [navigate]);
 
-  useEffect(() => {
+  const getFilteredData = () => {
     let filtered = tableData;
 
-    // Apply search filter
     if (searchValue) {
       filtered = filtered.filter(
         (student) =>
@@ -188,29 +185,15 @@ const DashboardPage: React.FC = () => {
       );
     }
 
-    // Apply status filter
     if (statusFilter) {
       filtered = filtered.filter((student) => student.status === statusFilter);
     }
 
-    setFilteredData(filtered);
-  }, [tableData, searchValue, statusFilter]);
+    return filtered;
+  };
 
   const handleSearch = (value: string) => {
     setSearchValue(value.toLowerCase().trim());
-
-    if (!searchValue) {
-      setFilteredData(tableData);
-      return;
-    }
-
-    const filtered = tableData.filter(
-      (student) =>
-        student.fullName.toLowerCase().includes(searchValue) ||
-        student.studentNumber.toLowerCase().includes(searchValue),
-    );
-    setSearchValue(searchValue);
-    setFilteredData(filtered);
   };
 
   const handleStatusFilter = (status: Student["status"]) => {
@@ -285,8 +268,8 @@ const DashboardPage: React.FC = () => {
 
           <Table
             columns={tableColumns}
-            dataSource={filteredData}
-            pagination={{ pageSize: 10 }}
+            dataSource={getFilteredData()}
+            pagination={{ pageSize: 20, showSizeChanger: false }}
           />
         </Space>
       </Card>
