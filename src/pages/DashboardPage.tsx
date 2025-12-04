@@ -5,6 +5,8 @@ import { ArrowUpOutlined, WarningOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const { Search } = Input;
 
 interface Student {
@@ -23,67 +25,11 @@ interface StudentResponse {
   risk_score: number;
 }
 
-const API_URL = import.meta.env.VITE_API_URL;
-
-const module_filters = [
-  { text: "CS161", value: "CS161" },
-  { text: "CS162", value: "CS162" },
-  { text: "CS210", value: "CS210" },
-];
-
-const tableColumns: TableProps<Student>["columns"] = [
-  {
-    title: "Student Number",
-    dataIndex: "studentNumber",
-    key: "studentNumber",
-  },
-  {
-    title: "Full Name",
-    dataIndex: "fullName",
-    key: "fullName",
-  },
-  {
-    title: "Module",
-    dataIndex: "module",
-    key: "module",
-    sorter: {
-      compare: (a, b) => a.module.localeCompare(b.module),
-      multiple: 3,
-    },
-    filters: module_filters,
-    onFilter: (value, record) => record.module === value,
-  },
-  {
-    title: "Risk Score",
-    dataIndex: "riskScore",
-    key: "riskScore",
-    sorter: {
-      compare: (a, b) => a.riskScore - b.riskScore,
-      multiple: 2,
-    },
-  },
-  {
-    title: "Status",
-    key: "status",
-    dataIndex: "status",
-    render: (status) => {
-      let color;
-      if (status === "At Risk") color = "volcano";
-      else if (status === "Improving") color = "green";
-      else if (status === "Newly At Risk") color = "orange";
-      else color = "geekblue";
-      return (
-        <Tag color={color} key={status}>
-          {status.toUpperCase()}
-        </Tag>
-      );
-    },
-    sorter: {
-      compare: (a, b) => a.status.localeCompare(b.status),
-      multiple: 1,
-    },
-  },
-];
+interface Module {
+  module_code: string;
+  module_name: string;
+  assessment_count: number;
+}
 
 const DashboardPage: React.FC = () => {
   const [tableData, setTableData] = useState<Student[]>([]);
@@ -92,7 +38,64 @@ const DashboardPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<Student["status"] | null>(
     null,
   );
+  const [moduleFilters, setModuleFilters] = useState<
+    { text: string; value: string }[]
+  >([]);
   const navigate = useNavigate();
+
+  const tableColumns: TableProps<Student>["columns"] = [
+    {
+      title: "Student Number",
+      dataIndex: "studentNumber",
+      key: "studentNumber",
+    },
+    {
+      title: "Full Name",
+      dataIndex: "fullName",
+      key: "fullName",
+    },
+    {
+      title: "Module",
+      dataIndex: "module",
+      key: "module",
+      sorter: {
+        compare: (a, b) => a.module.localeCompare(b.module),
+        multiple: 3,
+      },
+      filters: moduleFilters,
+      onFilter: (value, record) => record.module === value,
+    },
+    {
+      title: "Risk Score",
+      dataIndex: "riskScore",
+      key: "riskScore",
+      sorter: {
+        compare: (a, b) => a.riskScore - b.riskScore,
+        multiple: 2,
+      },
+    },
+    {
+      title: "Status",
+      key: "status",
+      dataIndex: "status",
+      render: (status) => {
+        let color;
+        if (status === "At Risk") color = "volcano";
+        else if (status === "Improving") color = "green";
+        else if (status === "Newly At Risk") color = "orange";
+        else color = "geekblue";
+        return (
+          <Tag color={color} key={status}>
+            {status.toUpperCase()}
+          </Tag>
+        );
+      },
+      sorter: {
+        compare: (a, b) => a.status.localeCompare(b.status),
+        multiple: 1,
+      },
+    },
+  ];
 
   const studentsAtRisk = tableData.filter(
     (student) => student.status === "At Risk",
@@ -103,6 +106,30 @@ const DashboardPage: React.FC = () => {
   const improvingStudents = tableData.filter(
     (student) => student.status === "Improving",
   ).length;
+
+  useEffect(() => {
+    const fetchModuleFilters = async () => {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+      try {
+        const response = await axios.get<Module[]>(`${API_URL}/modules`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const filters = response.data.map((module) => ({
+          text: module.module_code,
+          value: module.module_code,
+        }));
+        setModuleFilters(filters);
+      } catch (error) {
+        console.error("Error fetching modules for filters:", error);
+      }
+    };
+    fetchModuleFilters();
+  }, []);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -156,7 +183,8 @@ const DashboardPage: React.FC = () => {
       filtered = filtered.filter(
         (student) =>
           student.fullName.toLowerCase().includes(searchValue) ||
-          student.studentNumber.toLowerCase().includes(searchValue),
+          student.studentNumber.toLowerCase().includes(searchValue) ||
+          student.module.toLowerCase().includes(searchValue),
       );
     }
 
@@ -169,7 +197,7 @@ const DashboardPage: React.FC = () => {
   }, [tableData, searchValue, statusFilter]);
 
   const handleSearch = (value: string) => {
-    const searchValue = value.toLowerCase().trim();
+    setSearchValue(value.toLowerCase().trim());
 
     if (!searchValue) {
       setFilteredData(tableData);
@@ -245,9 +273,11 @@ const DashboardPage: React.FC = () => {
       <Card title="Student List">
         <Space direction="vertical" size="middle" style={{ display: "flex" }}>
           <Search
-            placeholder="Search by name or student number..."
+            placeholder="Search by name, student number or module"
             onSearch={handleSearch}
-            onChange={(e) => handleSearch(e.target.value)}
+            onChange={(e) =>
+              setSearchValue(e.target.value.toLowerCase().trim())
+            }
             enterButton
             allowClear
             style={{ width: 400 }}
