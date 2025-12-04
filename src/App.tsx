@@ -32,13 +32,19 @@ const App: React.FC = () => {
     >
       <AntApp>
         <Analytics />
-        <Layout style={{ minHeight: "100vh" }}>
+        <Layout
+          style={{
+            minHeight: "100vh",
+            backgroundImage: "url('/site-background.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundAttachment: "fixed",
+          }}
+        >
           {showNavBar && <NavBar />}
           <Content
             style={{
               padding: "24px 48px",
-              backgroundImage: "url('/site-background.jpg')",
-              backgroundSize: "cover",
             }}
           >
             <div
@@ -61,7 +67,8 @@ const App: React.FC = () => {
           </Content>
 
           <Footer style={{ textAlign: "center" }}>
-            Predictive Analytics ©2025 Created by a Final Year Student
+            Student Risk Predictor ©2025 Created by Adam Carroll, a CSSE Final
+            Year Student
           </Footer>
         </Layout>
       </AntApp>
