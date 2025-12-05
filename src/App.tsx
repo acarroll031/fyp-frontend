@@ -10,6 +10,7 @@ import SubmitAssignmentsPage from "./pages/SubmitAssignmentsPage.tsx";
 import ModulesPage from "./pages/ModulesPage.tsx";
 import RegisterPage from "./pages/RegistrationPage.tsx";
 import NavBar from "./Components/NavBar.tsx";
+import StudentDetailsPage from "./pages/StudentDetailsPage.tsx";
 
 const { Content, Footer } = Layout;
 
@@ -61,6 +62,10 @@ const App: React.FC = () => {
                   <Route path="/" element={<DashboardPage />} />
                   <Route path="/submit" element={<SubmitAssignmentsPage />} />
                   <Route path="/myModules" element={<ModulesPage />} />
+                  <Route
+                    path={"/student/:studentId"}
+                    element={<StudentDetailsPage />}
+                  />
                 </Route>
               </Routes>
             </div>

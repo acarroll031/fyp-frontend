@@ -3,7 +3,7 @@ import { Flex, Card, Statistic, Space, Table, Tag, Input } from "antd";
 import type { TableProps } from "antd"; // Import the TableProps type
 import { ArrowUpOutlined, WarningOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -11,7 +11,7 @@ const { Search } = Input;
 
 interface Student {
   key: string;
-  studentNumber: string;
+  studentNumber: number;
   fullName: string;
   module: string;
   riskScore: number;
@@ -52,6 +52,14 @@ const DashboardPage: React.FC = () => {
       title: "Full Name",
       dataIndex: "fullName",
       key: "fullName",
+      render: (text, record) => (
+        <Link
+          to={`/student/${record.studentNumber}`}
+          style={{ fontWeight: 500 }}
+        >
+          {text}
+        </Link>
+      ),
     },
     {
       title: "Module",
@@ -128,7 +136,7 @@ const DashboardPage: React.FC = () => {
       }
     };
     fetchModuleFilters();
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -145,10 +153,10 @@ const DashboardPage: React.FC = () => {
         });
 
         console.log(response.data);
-        const students: Student[] = response.data.map(
-          (student: StudentResponse) => ({
+        const students: Student[] = response.data
+          .map((student: StudentResponse) => ({
             key: student.student_id.toString() + "-" + student.module,
-            studentNumber: student.student_id.toString(),
+            studentNumber: student.student_id,
             fullName: student.student_name,
             module: student.module,
             riskScore: student.risk_score,
@@ -160,8 +168,8 @@ const DashboardPage: React.FC = () => {
                   : student.risk_score > 20
                     ? "Improving"
                     : "On Track",
-          }),
-        );
+          }))
+          .sort((a: Student, b: Student) => a.studentNumber - b.studentNumber);
         setTableData(students);
       } catch (error) {
         console.error("Error fetching students:", error);
@@ -180,7 +188,7 @@ const DashboardPage: React.FC = () => {
       filtered = filtered.filter(
         (student) =>
           student.fullName.toLowerCase().includes(searchValue) ||
-          student.studentNumber.toLowerCase().includes(searchValue) ||
+          student.studentNumber.toString().includes(searchValue) ||
           student.module.toLowerCase().includes(searchValue),
       );
     }

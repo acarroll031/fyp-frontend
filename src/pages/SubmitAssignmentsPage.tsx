@@ -59,8 +59,8 @@ const SubmitAssignmentsPage: React.FC = () => {
         message.error("Could not load your modules.");
       }
     };
-    fetchModules().then();
-  });
+    fetchModules();
+  }, [message]);
 
   const handleModuleChange = (value: string) => {
     const selectedModule = modules.find((mod) => mod.module_code === value);
@@ -105,7 +105,7 @@ const SubmitAssignmentsPage: React.FC = () => {
 
       if (response.ok) {
         message.success("Grades submitted successfully!");
-        form.resetFields();
+        form.setFieldsValue({ csvUpload: [] });
       } else {
         message.error("Failed to submit grades. Please try again.");
       }
