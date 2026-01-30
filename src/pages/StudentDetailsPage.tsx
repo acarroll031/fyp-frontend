@@ -10,8 +10,13 @@ import {
   Col,
   Tag,
   Statistic,
+  App,
 } from "antd";
-import { ArrowLeftOutlined, LineChartOutlined } from "@ant-design/icons";
+import {
+  ArrowLeftOutlined,
+  LineChartOutlined,
+  MailOutlined,
+} from "@ant-design/icons";
 import {
   LineChart,
   Line,
@@ -22,7 +27,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import axios from "axios";
-
+const { useApp } = App;
 interface Data {
   student: {
     student_id: number;
@@ -34,6 +39,7 @@ interface Data {
     max_consecutive_misses: number;
     progress_in_semester: number;
     risk_score: number;
+    email: string;
   };
   grades: {
     assessment_number: number;
@@ -48,6 +54,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const StudentDetailsPage: React.FC = () => {
   const { studentId } = useParams(); // Get ID from URL
+  const { message } = useApp();
   const navigate = useNavigate();
   const [data, setData] = useState<Data | null>(null);
   const [loading, setLoading] = useState(true);
@@ -94,6 +101,13 @@ const StudentDetailsPage: React.FC = () => {
         ? "#faad14"
         : "#3f8600";
 
+  const handleCopyEmail = () => {
+    if (student?.email) {
+      navigator.clipboard.writeText(student.email);
+      message.success("Email copied to clipboard!");
+    }
+  };
+
   return (
     <div style={{ padding: "24px", maxWidth: 1800, margin: "0 auto" }}>
       <Button
@@ -122,6 +136,14 @@ const StudentDetailsPage: React.FC = () => {
               valueStyle={{ color: riskColor, fontWeight: "bold" }}
               suffix="/ 100"
             />
+            <Button
+              type="primary"
+              icon={<MailOutlined />}
+              href={`mailto:${student.email}?subject=Academic Support - ${student.module}`}
+              onClick={handleCopyEmail}
+            >
+              Email Student
+            </Button>
           </Col>
         </Row>
       </Card>
