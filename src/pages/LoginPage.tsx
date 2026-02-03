@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Card, Typography, App } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
       formData.append("username", values.email);
       formData.append("password", values.password);
 
-      const response = await axios.post(`${API_URL}/login`, formData, {
+      const response = await axiosInstance.post(`${API_URL}/login`, formData, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },

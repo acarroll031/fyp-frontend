@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Flex, Card, Statistic, Space, Table, Tag, Input } from "antd";
 import type { TableProps } from "antd"; // Import the TableProps type
 import { ArrowUpOutlined, WarningOutlined } from "@ant-design/icons";
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -136,9 +137,12 @@ const DashboardPage: React.FC = () => {
         return;
       }
       try {
-        const response = await axios.get<Module[]>(`${API_URL}/modules`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axiosInstance.get<Module[]>(
+          `${API_URL}/modules`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
         const filters = response.data.map((module) => ({
           text: module.module_code,
           value: module.module_code,
@@ -161,7 +165,7 @@ const DashboardPage: React.FC = () => {
       }
 
       try {
-        const response = await axios.get(`${API_URL}/students`, {
+        const response = await axiosInstance.get(`${API_URL}/students`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

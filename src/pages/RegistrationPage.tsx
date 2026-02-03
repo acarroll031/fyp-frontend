@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Card, Typography, App } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
+import axiosInstance from "../axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
@@ -31,7 +32,7 @@ const RegisterPage: React.FC = () => {
   const onFinish = async (values: RegisterFormValues) => {
     setLoading(true);
     try {
-      await axios.post(
+      await axiosInstance.post(
         `${API_URL}/register`,
         {
           email: values.email,

@@ -12,7 +12,7 @@ import {
   App,
 } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 
 interface Module {
   module_code: string;
@@ -33,7 +33,7 @@ const ModulesPage: React.FC = () => {
   const fetchModules = async () => {
     try {
       const token = localStorage.getItem("access_token");
-      const response = await axios.get(`${API_URL}/modules`, {
+      const response = await axiosInstance.get(`${API_URL}/modules`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setModules(response.data);
@@ -67,7 +67,7 @@ const ModulesPage: React.FC = () => {
   const handleDelete = async (module_code: string) => {
     try {
       const token = localStorage.getItem("access_token");
-      await axios.delete(`${API_URL}/modules/${module_code}`, {
+      await axiosInstance.delete(`${API_URL}/modules/${module_code}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       message.success("Module deleted");
@@ -86,7 +86,7 @@ const ModulesPage: React.FC = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       if (editingModule) {
-        await axios.put(
+        await axiosInstance.put(
           `${API_URL}/modules/${editingModule.module_code}`,
           values,
           { headers },
@@ -94,7 +94,7 @@ const ModulesPage: React.FC = () => {
         message.success("Module updated");
       } else {
         // CREATE Logic
-        await axios.post(`${API_URL}/modules`, values, { headers });
+        await axiosInstance.post(`${API_URL}/modules`, values, { headers });
         message.success("Module created");
       }
 

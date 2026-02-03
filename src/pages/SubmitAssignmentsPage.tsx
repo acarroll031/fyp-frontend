@@ -11,7 +11,7 @@ import {
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps, UploadFile } from "antd";
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -50,7 +50,7 @@ const SubmitAssignmentsPage: React.FC = () => {
     const fetchModules = async () => {
       try {
         const token = localStorage.getItem("access_token");
-        const response = await axios.get(`${API_URL}/modules`, {
+        const response = await axiosInstance.get(`${API_URL}/modules`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setModules(response.data);
