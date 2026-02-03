@@ -63,7 +63,7 @@ const App: React.FC = () => {
                   <Route path="/submit" element={<SubmitAssignmentsPage />} />
                   <Route path="/myModules" element={<ModulesPage />} />
                   <Route
-                    path={"/student/:studentId"}
+                    path={"/student/:studentId/:moduleId"}
                     element={<StudentDetailsPage />}
                   />
                 </Route>

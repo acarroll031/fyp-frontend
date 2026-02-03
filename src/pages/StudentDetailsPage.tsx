@@ -53,7 +53,7 @@ const { Title, Text } = Typography;
 const API_URL = import.meta.env.VITE_API_URL;
 
 const StudentDetailsPage: React.FC = () => {
-  const { studentId } = useParams(); // Get ID from URL
+  const { studentId, moduleId } = useParams(); // Get ID from URL
   const { message } = useApp();
   const navigate = useNavigate();
   const [data, setData] = useState<Data | null>(null);
@@ -64,9 +64,12 @@ const StudentDetailsPage: React.FC = () => {
       try {
         const token = localStorage.getItem("access_token");
 
-        const response = await axios.get(`${API_URL}/students/${studentId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          `${API_URL}/students/${studentId}/${moduleId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
         setData(response.data);
       } catch (error) {
         console.error("Error fetching student details:", error);
@@ -76,7 +79,7 @@ const StudentDetailsPage: React.FC = () => {
     };
 
     fetchDetails();
-  }, [studentId]);
+  }, [studentId, moduleId]);
 
   if (loading)
     return (

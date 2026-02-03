@@ -54,7 +54,7 @@ const DashboardPage: React.FC = () => {
       key: "fullName",
       render: (text, record) => (
         <Link
-          to={`/student/${record.studentNumber}`}
+          to={`/student/${record.studentNumber}/${record.module}`}
           style={{ fontWeight: 500 }}
         >
           {text}
