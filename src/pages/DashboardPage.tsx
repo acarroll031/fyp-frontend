@@ -23,6 +23,7 @@ interface StudentResponse {
   student_name: string;
   module: string;
   risk_score: number;
+  previous_risk_score: number;
 }
 
 interface Module {
@@ -114,6 +115,18 @@ const DashboardPage: React.FC = () => {
     (student) => student.status === "Improving",
   ).length;
 
+  const getStatus = (
+    riskScore: number,
+    previousRiskScore: number,
+  ): Student["status"] => {
+    if (riskScore > 70)
+      if (previousRiskScore <= 70) return "Newly At Risk";
+      else return "At Risk";
+    else if (riskScore > 20 && riskScore < previousRiskScore)
+      return "Improving";
+    else return "On Track";
+  };
+
   useEffect(() => {
     const fetchModuleFilters = async () => {
       const token = localStorage.getItem("access_token");
@@ -160,14 +173,7 @@ const DashboardPage: React.FC = () => {
             fullName: student.student_name,
             module: student.module,
             riskScore: student.risk_score,
-            status:
-              student.risk_score > 70
-                ? "At Risk"
-                : student.risk_score > 40
-                  ? "Newly At Risk"
-                  : student.risk_score > 20
-                    ? "Improving"
-                    : "On Track",
+            status: getStatus(student.risk_score, student.previous_risk_score),
           }))
           .sort((a: Student, b: Student) => a.studentNumber - b.studentNumber);
         setTableData(students);
