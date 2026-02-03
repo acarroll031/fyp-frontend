@@ -26,7 +26,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 const { useApp } = App;
 interface Data {
   student: {
@@ -46,6 +46,10 @@ interface Data {
     score: number;
     progress_in_semester: number;
   }[];
+  risk_history: {
+    risk_score_history: number;
+    risk_score_history_timestamp: string;
+  }[];
 }
 
 const { Title, Text } = Typography;
@@ -64,13 +68,14 @@ const StudentDetailsPage: React.FC = () => {
       try {
         const token = localStorage.getItem("access_token");
 
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/students/${studentId}/${moduleId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
         );
         setData(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching student details:", error);
       } finally {
@@ -94,7 +99,7 @@ const StudentDetailsPage: React.FC = () => {
       </div>
     );
 
-  const { student, grades } = data;
+  const { student, grades, risk_history } = data;
 
   // determine risk color
   const riskColor =
@@ -163,7 +168,10 @@ const StudentDetailsPage: React.FC = () => {
           >
             <div style={{ width: "100%", height: 300 }}>
               <ResponsiveContainer>
-                <LineChart data={grades}>
+                <LineChart
+                  data={grades}
+                  margin={{ top: 5, right: 10, left: 0, bottom: 20 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="assessment_number"
@@ -181,7 +189,12 @@ const StudentDetailsPage: React.FC = () => {
                       position: "insideLeft",
                     }}
                   />
-                  <Tooltip />
+                  <Tooltip
+                    formatter={(value: number) => [
+                      `${value.toFixed(2)}`,
+                      "Risk Score",
+                    ]}
+                  />
                   <Line
                     type="monotone"
                     dataKey="score"
@@ -226,6 +239,74 @@ const StudentDetailsPage: React.FC = () => {
                 },
               ]}
             />
+          </Card>
+        </Col>
+      </Row>
+      <Row gutter={24} style={{ marginTop: 24 }}>
+        <Col xs={24} lg={14}>
+          <Card
+            title={
+              <>
+                <LineChartOutlined /> Risk Score Trajectory
+              </>
+            }
+            style={{ height: "100%" }}
+          >
+            <div style={{ width: "100%", height: 300 }}>
+              {risk_history && risk_history.length > 0 ? (
+                <ResponsiveContainer>
+                  <LineChart
+                    data={risk_history}
+                    margin={{ top: 5, right: 10, left: 0, bottom: 20 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="risk_score_history_timestamp"
+                      tickFormatter={(value) => {
+                        const date = new Date(value);
+                        return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+                      }}
+                      angle={-45}
+                      textAnchor={"end"}
+                      height={70}
+                      tick={{ fontSize: 10 }}
+                      label={{
+                        value: "Timestamp",
+                        position: "insideBottom",
+                        offset: -5,
+                      }}
+                    />
+                    <YAxis
+                      domain={[0, 100]}
+                      label={{
+                        value: "Risk Score",
+                        angle: -90,
+                        position: "insideLeft",
+                      }}
+                    />
+                    <Tooltip
+                      labelFormatter={(value) =>
+                        new Date(value).toLocaleString()
+                      }
+                      formatter={(value: number) => [
+                        `${value.toFixed(2)}`,
+                        "Risk Score",
+                      ]}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="risk_score_history"
+                      stroke="#cf1322"
+                      strokeWidth={3}
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 8 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <Text type="secondary">No risk score history available</Text>
+              )}
+            </div>
           </Card>
         </Col>
       </Row>
