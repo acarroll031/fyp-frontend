@@ -190,7 +190,7 @@ const StudentDetailsPage: React.FC = () => {
                     }}
                   />
                   <Tooltip
-                    formatter={(value: string) => [`${value}`, "Risk Score"]}
+                    formatter={(value) => [`${value ?? ""}`, "Risk Score"]}
                   />
                   <Line
                     type="monotone"
@@ -285,8 +285,8 @@ const StudentDetailsPage: React.FC = () => {
                       labelFormatter={(value) =>
                         new Date(value).toLocaleString()
                       }
-                      formatter={(value: number) => [
-                        `${value.toFixed(2)}`,
+                      formatter={(value) => [
+                        `${typeof value === "number" ? value.toFixed(2) : (value ?? "")}`,
                         "Risk Score",
                       ]}
                     />
