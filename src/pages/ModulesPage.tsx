@@ -45,7 +45,7 @@ const ModulesPage: React.FC = () => {
 
   useEffect(() => {
     fetchModules();
-  });
+  }, []);
 
   const handleAdd = () => {
     setEditingModule(null);
