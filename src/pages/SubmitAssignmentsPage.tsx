@@ -45,6 +45,7 @@ const SubmitAssignmentsPage: React.FC = () => {
   const [modules, setModules] = useState<Module[]>([]);
   const [maxAssessments, setMaxAssessments] = useState<number>(12);
   const [currentAssessment, setCurrentAssessment] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchModules = async () => {
@@ -94,6 +95,7 @@ const SubmitAssignmentsPage: React.FC = () => {
     const formData = new FormData();
     formData.append("file", file);
 
+    setLoading(true);
     try {
       const response = await fetch(
         `${API_URL}/students/${values.moduleCode}/grades?progress_in_semester=${progress_in_semester}`,
@@ -112,6 +114,8 @@ const SubmitAssignmentsPage: React.FC = () => {
     } catch (error) {
       console.error("Error submitting grades:", error);
       message.error("An error occurred while submitting grades.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -130,7 +134,11 @@ const SubmitAssignmentsPage: React.FC = () => {
           name="moduleCode"
           rules={[{ required: true, message: "Please select a module" }]}
         >
-          <Select placeholder="Select a module" onChange={handleModuleChange}>
+          <Select
+            placeholder="Select a module"
+            onChange={handleModuleChange}
+            disabled={loading}
+          >
             {modules.map((mod) => (
               <Option key={mod.module_code} value={mod.module_code}>
                 {mod.module_code} - {mod.module_name}
@@ -150,6 +158,7 @@ const SubmitAssignmentsPage: React.FC = () => {
             value={currentAssessment}
             onChange={setCurrentAssessment}
             tooltip={{ formatter: (value) => `Assessment ${value}` }}
+            disabled={loading}
           />
         </Form.Item>
 
@@ -165,12 +174,14 @@ const SubmitAssignmentsPage: React.FC = () => {
           }}
         >
           <Upload {...uploadProps}>
-            <Button icon={<UploadOutlined />}>Click to Upload</Button>
+            <Button icon={<UploadOutlined />} disabled={loading}>
+              Click to Upload
+            </Button>
           </Upload>
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={loading}>
             Submit Grades
           </Button>
         </Form.Item>
