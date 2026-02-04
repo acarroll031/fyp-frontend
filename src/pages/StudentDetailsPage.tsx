@@ -190,10 +190,7 @@ const StudentDetailsPage: React.FC = () => {
                     }}
                   />
                   <Tooltip
-                    formatter={(value: number) => [
-                      `${value.toFixed(2)}`,
-                      "Risk Score",
-                    ]}
+                    formatter={(value: string) => [`${value}`, "Risk Score"]}
                   />
                   <Line
                     type="monotone"
