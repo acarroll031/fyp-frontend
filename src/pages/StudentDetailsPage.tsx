@@ -11,11 +11,14 @@ import {
   Tag,
   Statistic,
   App,
+  Space,
+  Tooltip,
 } from "antd";
 import {
   ArrowLeftOutlined,
   LineChartOutlined,
   MailOutlined,
+  CopyOutlined,
 } from "@ant-design/icons";
 import {
   LineChart,
@@ -23,7 +26,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   ResponsiveContainer,
 } from "recharts";
 import axiosInstance from "../axiosInstance";
@@ -144,14 +147,18 @@ const StudentDetailsPage: React.FC = () => {
               valueStyle={{ color: riskColor, fontWeight: "bold" }}
               suffix="/ 100"
             />
-            <Button
-              type="primary"
-              icon={<MailOutlined />}
-              href={`mailto:${student.email}?subject=Academic Support - ${student.module}`}
-              onClick={handleCopyEmail}
-            >
-              Email Student
-            </Button>
+            <Space>
+              <Button
+                type="primary"
+                icon={<MailOutlined />}
+                href={`mailto:${student.email}?subject=Academic Support - ${student.module}`}
+              >
+                Email Student
+              </Button>
+              <Tooltip title="Copy email address">
+                <Button icon={<CopyOutlined />} onClick={handleCopyEmail} />
+              </Tooltip>
+            </Space>
           </Col>
         </Row>
       </Card>
@@ -189,7 +196,7 @@ const StudentDetailsPage: React.FC = () => {
                       position: "insideLeft",
                     }}
                   />
-                  <Tooltip
+                  <RechartsTooltip
                     formatter={(value) => [`${value ?? ""}`, "Risk Score"]}
                   />
                   <Line
@@ -281,7 +288,7 @@ const StudentDetailsPage: React.FC = () => {
                         position: "insideLeft",
                       }}
                     />
-                    <Tooltip
+                    <RechartsTooltip
                       labelFormatter={(value) =>
                         new Date(value).toLocaleString()
                       }
