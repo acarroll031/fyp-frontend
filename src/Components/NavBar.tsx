@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Menu, Button, Layout, List, Popover, Badge } from "antd";
 import { BellOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance.ts";
 
 const { Header } = Layout;
@@ -67,7 +67,7 @@ function NavBar() {
       }
     };
 
-    fetchNotifications();
+    fetchNotifications().then();
     const interval = setInterval(fetchNotifications, 60000); // Refresh every 60 seconds
     return () => clearInterval(interval);
   }, [API_URL]);
@@ -240,13 +240,13 @@ function NavBar() {
       >
         <Badge
           count={notifications.filter((n) => !n.is_read).length}
-          offset={[-15, 5]}
+          offset={[-20, 5]}
         >
           <BellOutlined
             style={{
               fontSize: 24,
               color: "white",
-              marginRight: 24,
+              marginRight: 30,
               cursor: "pointer",
             }}
           />

@@ -144,7 +144,7 @@ const StudentDetailsPage: React.FC = () => {
               title="Current Risk Score"
               value={student.risk_score}
               precision={1}
-              valueStyle={{ color: riskColor, fontWeight: "bold" }}
+              style={{ color: riskColor, fontWeight: "bold" }}
               suffix="/ 100"
             />
             <Space>
@@ -197,7 +197,7 @@ const StudentDetailsPage: React.FC = () => {
                     }}
                   />
                   <RechartsTooltip
-                    formatter={(value) => [`${value ?? ""}`, "Risk Score"]}
+                    formatter={(value) => [`${value ?? ""}`, "Score"]}
                   />
                   <Line
                     type="monotone"
