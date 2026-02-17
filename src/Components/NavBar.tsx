@@ -14,8 +14,8 @@ const navItems = [
 
 interface NotificationPayload {
   text: string;
-  studentId?: string;
-  moduleId?: string;
+  student_id?: string;
+  module_id?: string;
   type?: "RISK_ALERT" | "SYSTEM_ALERT";
 }
 
@@ -118,7 +118,6 @@ function NavBar() {
           <List.Item
             style={{
               padding: 10,
-              cursor: content.studentId ? "pointer" : "default",
               borderBottom: "1px solid #303030",
             }}
             actions={[
@@ -131,8 +130,8 @@ function NavBar() {
               </Button>,
             ]}
             onClick={() => {
-              if (content.studentId && content.moduleId) {
-                navigate(`/student/${content.studentId}/${content.moduleId}`);
+              if (content.student_id && content.module_id) {
+                navigate(`/student/${content.student_id}/${content.module_id}`);
               }
             }}
           >
