@@ -4,7 +4,6 @@ import type { TableProps } from "antd"; // Import the TableProps type
 import { ArrowUpOutlined, WarningOutlined } from "@ant-design/icons";
 import axiosInstance from "../axiosInstance";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -169,7 +168,6 @@ const DashboardPage: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log(response.data);
         const students: Student[] = response.data
           .map((student: StudentResponse) => ({
             key: student.student_id.toString() + "-" + student.module,
@@ -183,9 +181,6 @@ const DashboardPage: React.FC = () => {
         setTableData(students);
       } catch (error) {
         console.error("Error fetching students:", error);
-        if (axios.isAxiosError(error) && error.response?.status === 401) {
-          navigate("/login");
-        }
       }
     };
     fetchStudents();
@@ -218,7 +213,7 @@ const DashboardPage: React.FC = () => {
     setStatusFilter(statusFilter === status ? null : status);
   };
   return (
-    <Space direction="vertical" size="large" style={{ display: "flex" }}>
+    <Space vertical size="large" style={{ display: "flex" }}>
       <Flex gap="large">
         <Card
           hoverable
@@ -232,7 +227,7 @@ const DashboardPage: React.FC = () => {
           <Statistic
             title="Students at Risk"
             value={studentsAtRisk}
-            valueStyle={{ color: "#cf1322" }}
+            styles={{ content: { color: "#cf1322" } }}
             prefix={<WarningOutlined />}
           />
         </Card>
@@ -250,7 +245,7 @@ const DashboardPage: React.FC = () => {
           <Statistic
             title="Newly At Risk"
             value={newlyAtRisk}
-            valueStyle={{ color: "#faad14" }}
+            styles={{ content: { color: "#faad14" } }}
           />
         </Card>
         <Card
@@ -265,14 +260,14 @@ const DashboardPage: React.FC = () => {
           <Statistic
             title="Improving Students"
             value={improvingStudents}
-            valueStyle={{ color: "#3f8600" }}
+            styles={{ content: { color: "#3f8600" } }}
             prefix={<ArrowUpOutlined />}
           />
         </Card>
       </Flex>
 
       <Card title="Student List">
-        <Space direction="vertical" size="middle" style={{ display: "flex" }}>
+          <Space vertical size="middle" style={{ display: "flex" }}>
           <Search
             placeholder="Search by name, student number or module"
             onSearch={handleSearch}

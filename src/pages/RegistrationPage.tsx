@@ -77,8 +77,7 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <Form
-          name="login_form"
-          initialValues={{ remember: true }}
+          name="register_form"
           onFinish={onFinish}
           layout="vertical"
         >
@@ -121,7 +120,7 @@ const RegisterPage: React.FC = () => {
                   }
                   return Promise.reject(
                     new Error(
-                      "The new password that you entered do not match!",
+                      "The password you entered does not match!",
                     ),
                   );
                 },

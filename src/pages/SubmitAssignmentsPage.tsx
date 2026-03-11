@@ -56,7 +56,7 @@ const SubmitAssignmentsPage: React.FC = () => {
         });
         setModules(response.data);
       } catch (error) {
-        console.log("Failed to fetch modules:", error);
+        console.error("Failed to fetch modules:", error);
         message.error("Could not load your modules.");
       }
     };
@@ -75,42 +75,37 @@ const SubmitAssignmentsPage: React.FC = () => {
     }
   };
   const handleSubmit = async (values: FormValues) => {
-    console.log("Form Values:", values);
-    console.log("Current Step:", currentAssessment);
-
     const file = values.csvUpload?.[0]?.originFileObj;
 
     const progress_in_semester = Number(
       currentAssessment / maxAssessments,
     ).toFixed(2);
 
-    console.log("progress_in_semester:", progress_in_semester);
 
     if (!file) {
       message.error("Please upload a CSV file.");
       return;
     }
-    console.log("File to upload:", file);
 
     const formData = new FormData();
     formData.append("file", file);
 
     setLoading(true);
     try {
-      const response = await fetch(
+      const token = localStorage.getItem("access_token");
+      await axiosInstance.post(
         `${API_URL}/students/${values.moduleCode}/grades?progress_in_semester=${progress_in_semester}`,
+        formData,
         {
-          method: "POST",
-          body: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         },
       );
 
-      if (response.ok) {
-        message.success("Grades submitted successfully!");
-        form.setFieldsValue({ csvUpload: [] });
-      } else {
-        message.error("Failed to submit grades. Please try again.");
-      }
+      message.success("Grades submitted successfully!");
+      form.setFieldsValue({ csvUpload: [] });
     } catch (error) {
       console.error("Error submitting grades:", error);
       message.error("An error occurred while submitting grades.");
@@ -120,7 +115,7 @@ const SubmitAssignmentsPage: React.FC = () => {
   };
 
   return (
-    <Space direction="vertical" size="large" style={{ display: "flex" }}>
+    <Space vertical size="large" style={{ display: "flex" }}>
       <Title level={2}>Submit Assessments</Title>
 
       <Form

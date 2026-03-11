@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Menu, Button, Layout, List, Popover, Badge } from "antd";
 import { BellOutlined } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../axiosInstance.ts";
+import axiosInstance from "../axiosInstance";
 
 const { Header } = Layout;
 
@@ -29,9 +29,7 @@ const parseMessage = (rawMessage: string): NotificationPayload => {
     }
     // Fallback if parsed content isn't an object
     return { text: rawMessage };
-  } catch (e) {
-    // Fallback for old legacy notifications that are just plain text
-    console.log(e);
+  } catch {
     return { text: rawMessage };
   }
 };
@@ -50,7 +48,6 @@ function NavBar() {
   const location = useLocation();
   const loggedIn = Boolean(localStorage.getItem("access_token"));
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -58,7 +55,7 @@ function NavBar() {
       if (!token) return;
 
       try {
-        const response = await axiosInstance.get(`${API_URL}/notifications`, {
+        const response = await axiosInstance.get(`/notifications`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setNotifications(response.data);
@@ -67,10 +64,10 @@ function NavBar() {
       }
     };
 
-    fetchNotifications().then();
-    const interval = setInterval(fetchNotifications, 60000); // Refresh every 60 seconds
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 60000);
     return () => clearInterval(interval);
-  }, [API_URL]);
+  }, []);
 
   const toggleReadStatus = async (item: Notification, e?: React.MouseEvent) => {
     // Prevent the click from bubbling up (so it doesn't trigger the page redirect if you just clicked the button)
@@ -87,8 +84,8 @@ function NavBar() {
     try {
       // Call the correct API endpoint based on the new status
       const endpoint = newStatus
-        ? `${API_URL}/notifications/${item.id}/read`
-        : `${API_URL}/notifications/${item.id}/unread`;
+        ? `/notifications/${item.id}/read`
+        : `/notifications/${item.id}/unread`;
 
       await axiosInstance.put(
         endpoint,

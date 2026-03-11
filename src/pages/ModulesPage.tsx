@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Table,
   Button,
@@ -30,7 +30,7 @@ const ModulesPage: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
-  const fetchModules = async () => {
+  const fetchModules = useCallback(async () => {
     try {
       const token = localStorage.getItem("access_token");
       const response = await axiosInstance.get(`${API_URL}/modules`, {
@@ -38,14 +38,14 @@ const ModulesPage: React.FC = () => {
       });
       setModules(response.data);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch modules:", error);
       message.error("Failed to fetch modules");
     }
-  };
+  }, [message]);
 
   useEffect(() => {
     fetchModules();
-  }, []);
+  }, [fetchModules]);
 
   const handleAdd = () => {
     setEditingModule(null);
@@ -73,7 +73,7 @@ const ModulesPage: React.FC = () => {
       message.success("Module deleted");
       fetchModules();
     } catch (error) {
-      console.log(error);
+      console.error("Failed to delete module:", error);
       message.error("Failed to delete module");
     }
   };
@@ -101,7 +101,7 @@ const ModulesPage: React.FC = () => {
       setIsModalOpen(false);
       fetchModules();
     } catch (error) {
-      console.log(error);
+      console.error("Module operation failed:", error);
       message.error("Operation failed");
     } finally {
       setLoading(false);

@@ -78,7 +78,6 @@ const StudentDetailsPage: React.FC = () => {
           },
         );
         setData(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error("Error fetching student details:", error);
       } finally {

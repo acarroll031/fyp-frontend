@@ -1,30 +1,25 @@
-import React, { useEffect } from "react";
+import React, { useMemo } from "react";
 import { Layout, App as AntApp, ConfigProvider, theme } from "antd";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 
 import DashboardPage from "./pages/DashboardPage";
-import LoginPage from "./pages/LoginPage.tsx";
-import ProtectedRoute from "./Components/ProtectedRoute.tsx";
-import SubmitAssignmentsPage from "./pages/SubmitAssignmentsPage.tsx";
-import ModulesPage from "./pages/ModulesPage.tsx";
-import RegisterPage from "./pages/RegistrationPage.tsx";
-import NavBar from "./Components/NavBar.tsx";
-import StudentDetailsPage from "./pages/StudentDetailsPage.tsx";
+import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./Components/ProtectedRoute";
+import SubmitAssignmentsPage from "./pages/SubmitAssignmentsPage";
+import ModulesPage from "./pages/ModulesPage";
+import RegisterPage from "./pages/RegistrationPage";
+import NavBar from "./Components/NavBar";
+import StudentDetailsPage from "./pages/StudentDetailsPage";
 
 const { Content, Footer } = Layout;
 
 const App: React.FC = () => {
   const location = useLocation();
-  const [showNavBar, setShowNavBar] = React.useState(true);
-
-  useEffect(() => {
-    if (location.pathname === "/login" || location.pathname === "/register") {
-      setShowNavBar(false);
-    } else {
-      setShowNavBar(true);
-    }
-  }, [location]);
+  const showNavBar = useMemo(
+    () => !["/login", "/register"].includes(location.pathname),
+    [location.pathname],
+  );
   return (
     <ConfigProvider
       theme={{
